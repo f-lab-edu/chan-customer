@@ -2,7 +2,7 @@ version: "3" # 사용하고자 하는 docker-compose 버전 명시(현재 최신
 services:
   postgresdb:
     image: postgres:latest
-    container_name: chan-postgresdb # 컨테이너 이름(docker dashboard에 뜨는 이름)
+    container_name: chan-customer-postgresdb # 컨테이너 이름(docker dashboard에 뜨는 이름)
     restart: always # 항상 재시작(명시되어 있지 않을 경우 no가 default이며 어떤 상황에서도 restart 안함)
     ports:
       - "5432:5432" # HOST_PORT:CONTAINER_PORT로 host의 5433 포트를 container의 5432 포트와 매핑
@@ -21,6 +21,8 @@ services:
     environment: # springboot의 application-*.yml에 주입 필요한 정보
       PROFILE: "local"
       ENDPOINT_SELLER: "localhost:7070"
+      ENDPOINT_CUSTOMER: "localhost:8080"
+      ENDPOINT_LOGISTICS: "localhost:9090"
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgresdb:5432/springboot
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 1234
