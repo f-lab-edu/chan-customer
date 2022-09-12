@@ -1,5 +1,6 @@
 package com.chan.customer.service;
 
+import com.chan.customer.DatabaseTest;
 import com.chan.customer.domain.Address;
 import com.chan.customer.domain.Customer;
 import com.chan.customer.exception.CustomerFindFailedException;
@@ -9,13 +10,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
-class CustomerServiceTest {
+class CustomerServiceTest extends DatabaseTest {
     
     @Autowired
     CustomerService customerService;
@@ -24,7 +23,7 @@ class CustomerServiceTest {
     CustomerRepository customerRepository;
 
     @Test
-    public void customerSignUp() throws Exception{
+    public void customerSignUp(){
 
         Customer customer = new Customer();
         customer.setAccountId("test");
