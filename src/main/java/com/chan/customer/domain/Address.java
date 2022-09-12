@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import javax.persistence.Embeddable;
+import java.util.Objects;
 
 @Embeddable
 @NoArgsConstructor @AllArgsConstructor
@@ -21,4 +22,16 @@ public class Address {
     @NotNull
     private int sigunguCode;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Address address = (Address) o;
+        return getSigunguCode() == address.getSigunguCode();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getSigunguCode());
+    }
 }

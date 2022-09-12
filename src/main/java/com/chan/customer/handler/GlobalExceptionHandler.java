@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Message> handleException(Exception ex){
-        return responseBadRequest(ex.getMessage());
+        return responseInternalServerError(ex.getMessage());
     }
 
     private ResponseEntity responseBadRequest(String messages) {
@@ -32,5 +32,13 @@ public class GlobalExceptionHandler {
         message.setMessage(messages);
         return ResponseEntity.badRequest().body(message);
     }
+
+    private ResponseEntity responseInternalServerError(String messages) {
+        Message message = new Message();
+        message.setStatus(StatusEnum.BAD_REQUEST);
+        message.setMessage(messages);
+        return ResponseEntity.internalServerError().body(message);
+    }
+
 
 }

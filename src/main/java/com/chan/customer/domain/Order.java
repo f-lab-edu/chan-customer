@@ -33,10 +33,6 @@ public class Order {
 
     private LocalDateTime orderDateTime;
 
-    private LocalDate startDate;
-
-    private LocalDate endDate;
-
     public void setStatus(OrderStatus status) {
         this.status = status;
     }
@@ -60,14 +56,12 @@ public class Order {
         delivery.setOrder(this);
     }
 
-    public static Order request(Customer customer, Delivery delivery, List<OrderMenu> orderMenuList){
+    public static Order request(Customer customer, Delivery delivery, OrderMenu orderMenu){
         Order order = new Order();
         order.setCustomer(customer);
         order.setDelivery(delivery);
 
-        for(var orderMenu : orderMenuList){
-            order.addOrderMenu(orderMenu);
-        }
+        order.addOrderMenu(orderMenu);
 
         order.setStatus(OrderStatus.ORDER);
         order.setOrderDateTime(LocalDateTime.now());

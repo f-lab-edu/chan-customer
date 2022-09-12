@@ -38,8 +38,6 @@ public class OrderResponseDto {
         this.deliveryAddress = order.getDelivery().getAddress();
         this.status = order.getStatus();
         this.orderDateTime = order.getOrderDateTime();
-        this.startDate = order.getStartDate();
-        this.endDate = order.getEndDate();
 
         for(var m : order.getOrderMenuList()){
             MenuDto menuDto = new MenuDto();

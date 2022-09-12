@@ -4,6 +4,7 @@ import com.chan.customer.client.SellerClient;
 import com.chan.customer.common.Message;
 import com.chan.customer.common.StatusEnum;
 import com.chan.customer.domain.*;
+import com.chan.customer.dto.MenuDto;
 import com.chan.customer.dto.SellerOrderRequestDto;
 import com.chan.customer.exception.OrderFindFailedException;
 import com.chan.customer.exception.OrderRequestFailedException;
@@ -28,40 +29,25 @@ public class OrderService {
     private final SellerClient sellerClient;
 
     @Transactional
-    public Order requestOrder(String accountId, List<Menu> menuList){
+    public Order requestOrder(String accountId, MenuDto menuDto){
 
         //고객 정보 조회
         Customer customer = customerService.findAccountId(accountId);
 
         //배송 정보 생성
-        Delivery delivery = new Delivery();
-        delivery.setAddress(customer.getAddress());
+        Delivery delivery = makeDelivery(customer);
 
-        //주문 메뉴 생성
-        List<OrderMenu> orderMenuList = new ArrayList<>();
-        for(var menu : menuList){
-            OrderMenu orderMenu = new OrderMenu();
-            orderMenu.setMenu(menu);
-            orderMenuList.add(orderMenu);
-        }
-        Menu menu = menuList.get(0);
+        //메뉴 생성
+        Menu menu = menuDto.toEntity();
 
-        Order order = saveOrder(customer, delivery, orderMenuList);
+        //주문 저장
+        Order order = saveOrder(customer, delivery, menu);
 
         //Seller service 주문 요청
-        Message sellerOrderResult = sellerClient.requestOrder(SellerOrderRequestDto.builder()
-                .customerId(customer.getAccountId())
-                .customerOrderId(order.getId())
-                .customerName(customer.getName())
-                .customerAddress(delivery.getAddress())
-                .customerTelephone(customer.getTelephone())
-                .menuId(menu.getMenuNo())
-                .menuPlan(menu.getMenuPlan())
-                .menuCount(menu.getMenuCount())
-                .build());
+        Message requestOrderMessage = requestOrder(customer, order, menu, delivery);
 
-        if(!sellerOrderResult.getStatus().equals(StatusEnum.OK)){
-            throw new OrderRequestFailedException(sellerOrderResult.getMessage());
+        if(!requestOrderMessage.isOk()){
+            throw new OrderRequestFailedException(requestOrderMessage.getMessage());
         }
 
         return order;
@@ -100,10 +86,39 @@ public class OrderService {
         return order;
     }
 
-    private Order saveOrder(Customer customer, Delivery delivery, List<OrderMenu> orderMenuList){
+    public Delivery makeDelivery(Customer customer){
+
+        Delivery delivery = new Delivery();
+        delivery.setAddress(customer.getAddress());
+
+        return delivery;
+    }
+
+    public Message requestOrder(Customer customer, Order order, Menu menu, Delivery delivery){
+
+        SellerOrderRequestDto sellerOrderRequestDto = SellerOrderRequestDto.builder()
+                .customerId(customer.getAccountId())
+                .customerOrderId(order.getId())
+                .customerName(customer.getName())
+                .customerAddress(delivery.getAddress())
+                .customerTelephone(customer.getTelephone())
+                .menuId(menu.getMenuNo())
+                .menuPlan(menu.getMenuPlan())
+                .menuCount(menu.getMenuCount())
+                .build();
+
+        return sellerClient.requestOrder(sellerOrderRequestDto);
+    }
+
+    @Transactional
+    public Order saveOrder(Customer customer, Delivery delivery, Menu menu){
+
+        //주문 메뉴 생성
+        OrderMenu orderMenu = new OrderMenu();
+        orderMenu.setMenu(menu);
 
         //주문 생성
-        Order order = Order.request(customer, delivery, orderMenuList);
+        Order order = Order.request(customer, delivery, orderMenu);
 
         //주문 저장
         orderRepository.save(order);

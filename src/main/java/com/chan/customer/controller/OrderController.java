@@ -11,14 +11,11 @@ import com.chan.customer.service.OrderService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,12 +64,7 @@ public class OrderController {
             throw new OrderRequestValidationFailedException(objectMapper.writeValueAsString(errors));
         }
 
-        List<Menu> menuList = orderDto
-                .getMenuDtoList().stream()
-                .map(MenuDto::toEntity)
-                .collect(Collectors.toList());
-
-        Order order = orderService.requestOrder(orderDto.getAccountId(), menuList);
+        Order order = orderService.requestOrder(orderDto.getAccountId(), orderDto.getMenu());
 
         message.setStatus(StatusEnum.OK);
         message.setMessage("주문 성공");

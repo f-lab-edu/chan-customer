@@ -15,6 +15,6 @@ public class OrderRequestDto {
     private String accountId;
 
     @Valid
-    private List<MenuDto> menuDtoList = new ArrayList<>();
+    private MenuDto menu;
 
 }

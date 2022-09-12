@@ -14,4 +14,8 @@ public class Message {
         this.message = null;
     }
 
+    public boolean isOk(){
+        return status.equals(StatusEnum.OK);
+    }
+
 }
